@@ -1,0 +1,34 @@
+name: Deploy Walrus Site
+
+on:
+  push:
+    branches:
+      - "main"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install dependencies and build
+        run: |
+          npm install
+          npm run build
+
+      - name: Deploy to Walrus
+        uses: MystenLabs/walrus-sites/.github/actions/deploy@main
+        with:
+          SUI_ADDRESS: ${{ vars.SUI_ADDRESS }}
+          SUI_KEYSTORE: ${{ secrets.SUI_KEYSTORE }}
+          GITHUB_TOKEN:  ${{ secrets.GITHUB_TOKEN }}
+          DIST: out
+          EPOCHS: 2
+          SUI_NETWORK: mainnet
+          WS_RESOURCES: walrus/ws-resources.json
